@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -14,11 +15,13 @@ export default function Home() {
   const [rawInput, setRawInput] = useState('');
   const [response, setResponse] = useState<ContentPackage | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setResponse(null);
+    setError(null);
 
     try {
       const res = await fetch('/api/process-content', {
@@ -28,14 +31,40 @@ export default function Home() {
         },
         body: JSON.stringify({ rawInput }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Erro desconhecido ao processar conteúdo.');
+      }
+
       const data: ContentPackage = await res.json();
       setResponse(data);
-    } catch (error) {
-      console.error('Erro ao processar conteúdo:', error);
-      // Optionally set an error message in the UI
+    } catch (err: any) {
+      console.error('Erro ao processar conteúdo:', err);
+      setError(err.message || 'Erro ao processar sua ideia. Por favor, tente novamente mais tarde.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCopy = () => {
+    if (response) {
+      const textToCopy = `
+Pacote Gravar Agora:\n${response.gravarAgora.map(item => `- ${item}`).join('\n')}\n\n
+Pacote Testar:\n${response.testar.map(item => `- ${item}`).join('\n')}\n\n
+Pacote Reaproveitar:\n${response.reaproveitar.map(item => `- ${item}`).join('\n')}\n\n
+Pacote Vender Sem Parecer Venda:\n${response.venderSemParecerVenda.map(item => `- ${item}`).join('\n')}\n\n
+Próxima Ação da Sol: ${response.proximaAcao}
+      `;
+      navigator.clipboard.writeText(textToCopy);
+      alert('Pacote completo copiado para a área de transferência!');
+    }
+  };
+
+  const handleClear = () => {
+    setRawInput('');
+    setResponse(null);
+    setError(null);
   };
 
   return (
@@ -71,6 +100,12 @@ export default function Home() {
             {loading ? 'Processando...' : 'Processar Ideia'}
           </button>
         </form>
+
+        {error && (
+          <div className="mt-4 p-4 rounded-md bg-red-900 text-red-300 border border-red-700">
+            <p>Erro: {error}</p>
+          </div>
+        )}
 
         {response && (
           <div className="mt-8 p-6 rounded-md bg-gray-900 border border-gray-700">
@@ -128,6 +163,20 @@ export default function Home() {
                 <h3 className="text-xl font-medium text-blue-400">5. Próxima Ação da Sol</h3>
                 <p className="text-lg font-bold">{response.proximaAcao}</p>
               </div>
+            </div>
+            <div className="flex justify-end gap-4 mt-6">
+              <button
+                onClick={handleCopy}
+                className="px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 text-white font-semibold transition-colors duration-200"
+              >
+                Copiar Pacote Completo
+              </button>
+              <button
+                onClick={handleClear}
+                className="px-4 py-2 rounded-md bg-gray-600 hover:bg-gray-700 text-white font-semibold transition-colors duration-200"
+              >
+                Limpar
+              </button>
             </div>
           </div>
         )}
