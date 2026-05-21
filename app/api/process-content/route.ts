@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { systemPrompt } from '../../lib/systemPrompt';
+import { systemPrompt } from '@/lib/systemPrompt';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Or another suitable model like gpt-4o-mini, gemini-1.5-flash
+      model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: rawInput },

@@ -31,5 +31,4 @@ Regras adicionais:
 - Tom de voz: visceral, elegante, direto, humano, provocativo, profundo sem ser confuso. Mantenha a essência da Sol Lima: inteligente, sexy sem ser vulgar, divertida e autoridade em autoconhecimento para construção de relacionamentos extraordinários.
 - Se a entrada do usuário for vaga, peça mais detalhes de forma provocativa e inteligente, mas ainda assim tente gerar algo útil dentro dos pacotes, mesmo que seja para pedir mais informações.
 
-Agora, processe a seguinte entrada do usuário e retorne o JSON estritamente no formato especificado.`
-`;
+Agora, processe a seguinte entrada do usuário e retorne o JSON estritamente no formato especificado.`;
